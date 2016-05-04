@@ -20,9 +20,9 @@ import java.awt.Color;
 /**
  * <p>Title: Pixel</p>
  * <p>Description: Class that handles Pixel data in various formats</p>
- * <p>Copyright: Copyright (c) 2003 Colin Barré-Brisebois, Eric Paquette</p>
- * <p>Company: ETS - École de Technologie Supérieure</p>
- * @author Colin Barré-Brisebois
+ * <p>Copyright: Copyright (c) 2003 Colin Barrï¿½-Brisebois, Eric Paquette</p>
+ * <p>Company: ETS - ï¿½cole de Technologie Supï¿½rieure</p>
+ * @author Colin Barrï¿½-Brisebois
  * @version $Revision: 1.11 $
  */
 public class Pixel {
