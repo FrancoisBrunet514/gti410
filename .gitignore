@@ -12,5 +12,10 @@ local.properties
 
 # Eclipse Core
 .project
+.classpath
+
+# IntelliJ
+.idea
+*.iml
 
 .DS_STORE
