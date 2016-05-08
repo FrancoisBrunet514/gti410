@@ -17,5 +17,6 @@ local.properties
 # IntelliJ
 .idea
 *.iml
+/out
 
 .DS_STORE
