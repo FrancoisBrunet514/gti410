@@ -27,7 +27,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import model.Colors;
+import utils.HSVConverter;
 import model.Pixel;
 
 /**
@@ -146,7 +146,7 @@ public class ColorDialog extends JDialog {
 	private JPanel createHSVPanel(ColorDialogResult result, int imageWidths) {	
 		hsvMediator = new HSVColorMediator(result, imageWidths, 30);
 		
-		Colors colors = new Colors(result.getPixel().getRed(), result.getPixel().getGreen(), result.getPixel().getBlue());
+		HSVConverter colors = new HSVConverter(result.getPixel().getRed(), result.getPixel().getGreen(), result.getPixel().getBlue());
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

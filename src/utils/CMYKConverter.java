@@ -3,7 +3,7 @@ package utils;
 /**
  * Created by etienne on 16-05-05.
  */
-public class ColorConverter {
+public class CMYKConverter {
 
     /**
      * Methode permettant de convertir une couleur RGB en CMYK.

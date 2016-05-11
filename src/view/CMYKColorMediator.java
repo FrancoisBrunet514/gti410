@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import model.ObserverIF;
 import model.Pixel;
 import model.PixelDouble;
-import utils.ColorConverter;
+import utils.CMYKConverter;
 
 public class CMYKColorMediator extends Object implements SliderObserver, ObserverIF {
 
@@ -48,7 +48,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		int green = result.getPixel().getGreen();
 		int blue = result.getPixel().getBlue();
 
-		int[] cmyk = ColorConverter.rgbToCMYK(red, green, blue);
+		int[] cmyk = CMYKConverter.rgbToCMYK(red, green, blue);
 
 		this.cyan = cmyk[0];
 		this.magenta = cmyk[1];
@@ -70,7 +70,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 
 	@Override
 	public void update() {
-		int[] rgb = ColorConverter.cmykToRGB(this.cyan, this.magenta, this.yellow, this.black);
+		int[] rgb = CMYKConverter.cmykToRGB(this.cyan, this.magenta, this.yellow, this.black);
 
         int red = rgb[0];
         int green = rgb[1];
@@ -83,7 +83,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		green = result.getPixel().getGreen();
 		blue = result.getPixel().getBlue();
 
-		int[] cmyk = ColorConverter.rgbToCMYK(red, green, blue);
+		int[] cmyk = CMYKConverter.rgbToCMYK(red, green, blue);
 
 		cyanCS.setValue(cmyk[0]);
 		magentaCS.setValue(cmyk[1]);
@@ -147,7 +147,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 			computeBlackImage(cyan, magenta, yellow, black);
 		}
 
-		int[] rgb = ColorConverter.cmykToRGB(cyan, magenta, yellow, black);
+		int[] rgb = CMYKConverter.cmykToRGB(cyan, magenta, yellow, black);
 
 		Pixel pixel = new Pixel(rgb[0], rgb[1], rgb[2], 255);
 		result.setPixel(pixel);
@@ -161,7 +161,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
      * @param black
      */
 	private void computeCyanImage(int cyan, int magenta, int yellow, int black) {
-		int[] rgbArray = ColorConverter.cmykToRGB(cyan, magenta, yellow, black);
+		int[] rgbArray = CMYKConverter.cmykToRGB(cyan, magenta, yellow, black);
 		Pixel p = new Pixel(rgbArray[0], rgbArray[1], rgbArray[2], 255);
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setRed((int)(255 - black - ((double) i / (double) imagesWidth * (255 - black))));
@@ -183,7 +183,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
      * @param black
      */
 	private void computeMagentaImage(int cyan, int magenta, int yellow, int black) {
-		int[] rgbArray = ColorConverter.cmykToRGB(cyan, magenta, yellow, black);
+		int[] rgbArray = CMYKConverter.cmykToRGB(cyan, magenta, yellow, black);
 		Pixel p = new Pixel(rgbArray[0], rgbArray[1], rgbArray[2], 255);
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setGreen((int)(255 - black - ((double) i / (double) imagesWidth * (255 - black))));
@@ -205,7 +205,7 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
      * @param black
      */
 	private void computeYellowImage(int cyan, int magenta, int yellow, int black) {
-		int[] rgbArray = ColorConverter.cmykToRGB(cyan, magenta, yellow, black);
+		int[] rgbArray = CMYKConverter.cmykToRGB(cyan, magenta, yellow, black);
 		Pixel p = new Pixel(rgbArray[0], rgbArray[1], rgbArray[2], 255);
 		for (int i = 0; i<imagesWidth; ++i) {
 			p.setBlue((int)(255 - black - ((double) i / (double) imagesWidth * (255 - black))));
@@ -228,13 +228,13 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
      */
 	private void computeBlackImage(int cyan, int magenta, int yellow, int black) {
 		int _blackReference;
-		int[] rgbArray = ColorConverter.cmykToRGB(cyan, magenta, yellow, black);
+		int[] rgbArray = CMYKConverter.cmykToRGB(cyan, magenta, yellow, black);
 		Pixel p = new Pixel(rgbArray[0], rgbArray[1], rgbArray[2], 255);
 		for (int i = 0; i<imagesWidth; ++i) {
 
 			_blackReference = (int)Math.round((((double)i / (double)imagesWidth)* 255.0));
 
-			int[] rgbArrayLoop = ColorConverter.cmykToRGB(cyan, magenta, yellow, _blackReference);
+			int[] rgbArrayLoop = CMYKConverter.cmykToRGB(cyan, magenta, yellow, _blackReference);
 
 			p.setRed(rgbArrayLoop[0]);
 			p.setGreen(rgbArrayLoop[1]);

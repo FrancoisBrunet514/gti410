@@ -17,7 +17,7 @@ package view;
 
 import java.awt.image.BufferedImage;
 
-import model.Colors;
+import utils.HSVConverter;
 import model.ObserverIF;
 import model.Pixel;
 
@@ -39,27 +39,69 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 	ColorDialogResult result;
 	
 	HSVColorMediator(ColorDialogResult result, int imagesWidth, int imagesHeight) {
-		Colors colors = new Colors(red, green, blue);
-		this.hue = colors.h;
-		this.saturation = colors.s;
-		this.value = colors.v;
 		this.imagesWidth = imagesWidth;
 		this.imagesHeight = imagesHeight;
+		
 		this.red = result.getPixel().getRed();
 		this.green = result.getPixel().getGreen();
 		this.blue = result.getPixel().getBlue();
 		this.result = result;
 		result.addObserver(this);
 		
+		HSVConverter colors = new HSVConverter(red, green, blue);
+		hue = colors.h;
+		saturation = colors.s;
+		value = colors.v;
+		
 		hueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		saturationImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		valueImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		
-		computeHueImage(red, green, blue);
-		computeSaturationImage(red, green, blue);
-		computeValueImage(red, green, blue); 	
+		computeHueImage(hue, saturation, value);
+		computeSaturationImage(hue, saturation, value);
+		computeValueImage(hue, saturation, value);	
 	}
 	
+	/* (non-Javadoc)
+ * @see model.ObserverIF#update()
+ */
+public void update() {
+	HSVConverter colors = new HSVConverter(hue, saturation, value);
+	red = colors.r;
+	green = colors.g;
+	blue = colors.b;
+	
+	// When updated with the new "result" color, if the "currentColor"
+	// is already properly set, there is no need to recompute the images.
+	Pixel currentColor = new Pixel(red, green, blue, 255);
+	
+	if(currentColor.getARGB() == result.getPixel().getARGB()) return;
+	
+	red = result.getPixel().getRed();
+	green = result.getPixel().getGreen();
+	blue = result.getPixel().getBlue();
+	
+	colors = new HSVConverter(red, green, blue);
+	hue = colors.h;
+	saturation = colors.s;
+	value = colors.v;
+	
+	hueCS.setValue((int) hue);
+	saturationCS.setValue((int) saturation);
+	valueCS.setValue((int) value);
+	
+	computeHueImage(hue, saturation, value);
+	computeSaturationImage(hue, saturation, value);
+	computeValueImage(hue, saturation, value);
+	
+	// Efficiency issue: When the color is adjusted on a tab in the 
+	// user interface, the sliders color of the other tabs are recomputed,
+	// even though they are invisible. For an increased efficiency, the 
+	// other tabs (mediators) should be notified when there is a tab 
+	// change in the user interface. This solution was not implemented
+	// here since it would increase the complexity of the code, making it
+	// harder to understand.
+}
 	
 	/*
 	 * @see View.SliderObserver#update(double)
@@ -84,35 +126,38 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 			updateHue = true;
 			updateSaturation = true;
 		}
+		if (updateHue) {
+			computeHueImage(hue, saturation, value);
+		}
+		if (updateSaturation) {
+			computeSaturationImage(hue, saturation, value);
+		}
+		if (updateValue) {
+			computeValueImage(hue, saturation, value);
+		}
 		
-		Colors colors = new Colors(hue, saturation, value);
+		HSVConverter colors = new HSVConverter(hue, saturation, value);
 		red = colors.r;
 		green = colors.g;
 		blue = colors.b;
-		
-		if (updateHue) {
-			computeHueImage(red, green, blue);
-		}
-		if (updateSaturation) {
-			computeSaturationImage(red, green, blue);
-		}
-		if (updateValue) {
-			computeValueImage(red, green, blue);
-		}
 		
 		Pixel pixel = new Pixel(red, green, blue, 255);
 		result.setPixel(pixel);
 	}
 	
-	public void computeHueImage(int red, int green, int blue) { 
+	public void computeHueImage(double hue, double saturation, double value) { 
+		HSVConverter colors = new HSVConverter(hue, saturation, value);
+		red = colors.r;
+		green = colors.g;
+		blue = colors.b;
+		
 		Pixel p = new Pixel(red, green, blue, 255);
-		Colors oldColor = new Colors(red, green, blue);
 		
 		for (int i = 0; i<imagesWidth; ++i) {
-			Colors newColor = new Colors((int)(((double)i / (double)imagesWidth)*255.0), oldColor.s, oldColor.v);
-			p.setRed(newColor.r);
-			p.setGreen(newColor.g);
-			p.setBlue(newColor.b);
+			colors = new HSVConverter((int)(((double)i / (double)imagesWidth)*255.0), colors.s, colors.v);
+			p.setRed(colors.r);
+			p.setGreen(colors.g);
+			p.setBlue(colors.b);
 			
 			int rgb = p.getARGB();
 			for (int j = 0; j<imagesHeight; ++j) {
@@ -124,15 +169,19 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeSaturationImage(int red, int green, int blue) {
+	public void computeSaturationImage(double hue, double saturation, double value) {
+		HSVConverter colors = new HSVConverter(hue, saturation, value);
+		red = colors.r;
+		green = colors.g;
+		blue = colors.b;
+		
 		Pixel p = new Pixel(red, green, blue, 255);
-		Colors oldColor = new Colors(red, green, blue);
 		
 		for (int i = 0; i<imagesWidth; ++i) {
-			Colors newColor = new Colors(oldColor.h, (int)(((double)i / (double)imagesWidth)*255.0), oldColor.v);
-			p.setRed(newColor.r);
-			p.setGreen(newColor.g);
-			p.setBlue(newColor.b);
+			colors = new HSVConverter(colors.h, (int)(((double)i / (double)imagesWidth)*255.0), colors.v);
+			p.setRed(colors.r);
+			p.setGreen(colors.g);
+			p.setBlue(colors.b);
 			
 			int rgb = p.getARGB();
 			for (int j = 0; j<imagesHeight; ++j) {
@@ -144,15 +193,19 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 		}
 	}
 	
-	public void computeValueImage(int red, int green, int blue) { 
+	public void computeValueImage(double hue, double saturation, double value) { 
+		HSVConverter colors = new HSVConverter(hue, saturation, value);
+		red = colors.r;
+		green = colors.g;
+		blue = colors.b;
+		
 		Pixel p = new Pixel(red, green, blue, 255);
-		Colors oldColor = new Colors(red, green, blue);
 		
 		for (int i = 0; i<imagesWidth; ++i) {
-			Colors newColor = new Colors(oldColor.h, oldColor.s, (int)(((double)i / (double)imagesWidth))*255.0);
-			p.setRed(newColor.r);
-			p.setGreen(newColor.g);
-			p.setBlue(newColor.b);
+			colors = new HSVConverter(colors.h, colors.s, (int)(((double)i / (double)imagesWidth)*255.0));
+			p.setRed(colors.r);
+			p.setGreen(colors.g);
+			p.setBlue(colors.b);
 			
 			int rgb = p.getARGB();
 			for (int j = 0; j<imagesHeight; ++j) {
@@ -207,63 +260,6 @@ class HSVColorMediator extends Object implements SliderObserver, ObserverIF {
 	public void setValueCS(ColorSlider slider) {
 		valueCS = slider;
 		slider.addObserver(this);
-	}
-	/**
-	 * @return
-	 */
-	public double getBlue() {
-		return blue;
-	}
-
-	/**
-	 * @return
-	 */
-	public double getGreen() {
-		return green;
-	}
-
-	/**
-	 * @return
-	 */
-	public double getRed() {
-		return red;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see model.ObserverIF#update()
-	 */
-	public void update() {
-		// When updated with the new "result" color, if the "currentColor"
-		// is already properly set, there is no need to recompute the images.
-		Pixel currentColor = new Pixel(red, green, blue, 255);
-		
-		if(currentColor.getARGB() == result.getPixel().getARGB()) return;
-		
-		red = result.getPixel().getRed();
-		green = result.getPixel().getGreen();
-		blue = result.getPixel().getBlue();
-		
-		Colors colors = new Colors(red, green, blue);
-		this.hue = colors.h;
-		this.saturation = colors.s;
-		this.value = colors.v;
-		
-		hueCS.setValue((int) hue);
-		saturationCS.setValue((int) saturation);
-		valueCS.setValue((int) value);
-		
-		computeHueImage(red, green, blue);
-		computeSaturationImage(red, green, blue);
-		computeValueImage(red, green, blue);
-		
-		// Efficiency issue: When the color is adjusted on a tab in the 
-		// user interface, the sliders color of the other tabs are recomputed,
-		// even though they are invisible. For an increased efficiency, the 
-		// other tabs (mediators) should be notified when there is a tab 
-		// change in the user interface. This solution was not implemented
-		// here since it would increase the complexity of the code, making it
-		// harder to understand.
 	}
 
 }
