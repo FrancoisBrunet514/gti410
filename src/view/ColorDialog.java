@@ -27,19 +27,21 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import model.Colors;
 import model.Pixel;
 
 /**
  * <p>Title: ColorDialog</p>
  * <p>Description: ... (JDialog)</p>
  * <p>Copyright: Copyright (c) 2003 Mohammed Elghaouat, Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * @author unascribed
  * @version $Revision: 1.7 $
  */
 public class ColorDialog extends JDialog {
 	private JButton okButton;
 	private RGBColorMediator rgbMediator;
+	private HSVColorMediator hsvMediator;
 	private ActionListener okActionListener;
 	private ColorDialogResult result;
 	
@@ -122,8 +124,25 @@ public class ColorDialog extends JDialog {
 		return panel;
 	}
 	
-	private JPanel createHSVPanel(ColorDialogResult result, int imageWidths) {	
+	private JPanel createHSVPanel(ColorDialogResult result, int imageWidths) {
+		hsvMediator = new HSVColorMediator(result, imageWidths, 30);
+		
+		Colors colors = new Colors(result.getPixel().getRed(), result.getPixel().getGreen(), result.getPixel().getBlue());
+		
 		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		ColorSlider csHue = new ColorSlider("H:", (int) colors.h, hsvMediator.getHueImage());
+		ColorSlider csSaturation = new ColorSlider("S:", (int) colors.s, hsvMediator.getSaturationImage());
+		ColorSlider csBrightness = new ColorSlider("V:", (int) colors.v, hsvMediator.getValueImage());
+		
+		hsvMediator.setHueCS(csHue);
+		hsvMediator.setSaturationCS(csSaturation);
+		hsvMediator.setValueCS(csBrightness);
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(csHue);
+		panel.add(csSaturation);
+		panel.add(csBrightness);
 		
 		return panel;
 	}
