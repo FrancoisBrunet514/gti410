@@ -27,6 +27,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import utils.CMYKConverter;
 import utils.HSVConverter;
 import model.Pixel;
 
@@ -122,12 +123,14 @@ public class ColorDialog extends JDialog {
 	private JPanel createCMYKPanel(ColorDialogResult result, int imageWidths) {
 		cmykMediator = new CMYKColorMediator(result, imageWidths, 30);
 		
+		int[] cmyk = CMYKConverter.rgbToCMYK(result.getPixel().getRed(), result.getPixel().getGreen(), result.getPixel().getBlue());
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		ColorSlider csCyan = new ColorSlider("C", result.getPixel().getRed(), cmykMediator.getCyanImage());
-		ColorSlider csMagenta = new ColorSlider("M", result.getPixel().getRed(), cmykMediator.getMagentaImage());
-		ColorSlider csYellow = new ColorSlider("Y", result.getPixel().getRed(), cmykMediator.getYellowImage());
-		ColorSlider csBlack = new ColorSlider("K", result.getPixel().getRed(), cmykMediator.getBlackImage());
+		ColorSlider csCyan = new ColorSlider("C", cmyk[0], cmykMediator.getCyanImage());
+		ColorSlider csMagenta = new ColorSlider("M", cmyk[1], cmykMediator.getMagentaImage());
+		ColorSlider csYellow = new ColorSlider("Y", cmyk[2], cmykMediator.getYellowImage());
+		ColorSlider csBlack = new ColorSlider("K", cmyk[3], cmykMediator.getBlackImage());
 		
 		cmykMediator.setCyanCS(csCyan);
 		cmykMediator.setMagentaCS(csMagenta);

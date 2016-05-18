@@ -43,6 +43,9 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 	CMYKColorMediator(ColorDialogResult result, int imagesWidth, int imagesHeight) {
 		this.imagesWidth = imagesWidth;
 		this.imagesHeight = imagesHeight;
+		
+		this.result = result;
+		result.addObserver(this);
 
 		int red = result.getPixel().getRed();
 		int green = result.getPixel().getGreen();
@@ -55,13 +58,11 @@ public class CMYKColorMediator extends Object implements SliderObserver, Observe
 		this.yellow = cmyk[2];
 		this.black = cmyk[3];
 
-		this.result = result;
-		result.addObserver(this);
-
 		cyanImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		magentaImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		yellowImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
 		blackImage = new BufferedImage(imagesWidth, imagesHeight, BufferedImage.TYPE_INT_ARGB);
+		
 		computeCyanImage(cyan, magenta, yellow, black);
 		computeMagentaImage(cyan, magenta, yellow, black);
 		computeYellowImage(cyan, magenta, yellow, black);
