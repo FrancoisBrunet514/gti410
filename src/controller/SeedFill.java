@@ -3,11 +3,15 @@ package controller;
 import java.awt.Point;
 import java.awt.event.*;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import model.ImageX;
 import model.Pixel;
 import model.Shape;
+import utils.HSVConverter;
 
 public class SeedFill extends AbstractTransformer {
 	private ImageX currentImage;
@@ -17,6 +21,9 @@ public class SeedFill extends AbstractTransformer {
 	private int hueThreshold = 1;
 	private int saturationThreshold = 2;
 	private int valueThreshold = 3;
+	private int red;
+	private int green;
+	private int blue;
 	
 	/**
 	 * Creates an ImageLineFiller with default parameters.
@@ -68,7 +75,27 @@ public class SeedFill extends AbstractTransformer {
 	}
 	
 	private void floodFill(Point ptClicked) {
+		System.out.println("Flood fill started");
 		
+		HSVConverter converter = new HSVConverter((double)this.hueThreshold, (double)this.saturationThreshold, (double)this.valueThreshold );
+		Pixel pxClicked = new Pixel();
+		pxClicked.setRed(converter.r);
+		pxClicked.setGreen(converter.g);
+		pxClicked.setBlue(converter.b);
+		
+		floodFill4(ptClicked.x, ptClicked.y, pxClicked, fillColor);
+		
+		System.out.println("Flood fill finished");
+	}
+	
+	private void floodFill4(int x, int y, Pixel targetColor, Pixel replacementColor) {
+		if (targetColor.equals(replacementColor)) return;
+		if (!targetColor.equals(currentImage.getPixel(x, y))) return;
+		currentImage.setPixel(x, y, replacementColor);
+		floodFill4(x-1,y,targetColor,replacementColor);
+		floodFill4(x+1,y,targetColor,replacementColor);
+		floodFill4(x,y-1,targetColor,replacementColor);
+		floodFill4(x,y+1,targetColor,replacementColor);
 	}
 	
 	private void boundaryFill(Point ptClicked) {
@@ -117,11 +144,6 @@ public class SeedFill extends AbstractTransformer {
 	 */
 	public void setFloodFill(boolean b) {
 		floodFill = b;
-		if (floodFill) {
-			System.out.println("now doing Flood Fill");
-		} else {
-			System.out.println("now doing Boundary Fill");
-		}
 	}
 	
 	/**
