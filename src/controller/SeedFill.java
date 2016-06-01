@@ -99,7 +99,29 @@ public class SeedFill extends AbstractTransformer {
 	}
 	
 	private void boundaryFill(Point ptClicked) {
-		
+		Stack<Point> stack = new Stack<Point>();
+		stack.push(ptClicked);
+		hsvConverter = new HSVConverter(this.getHueThreshold(), this.getSaturationThreshold(), this.getValueThreshold());
+		Pixel thresholdColor = new Pixel(hsvConverter.r, hsvConverter.g, hsvConverter.b);
+		while (!stack.empty()) {
+			Point current = (Point)stack.pop();
+			if (0 <= current.x && current.x < currentImage.getImageWidth() &&
+				0 <= current.y && current.y < currentImage.getImageHeight() &&
+				!currentImage.getPixel(current.x, current.y).equals(borderColor) &&
+				!currentImage.getPixel(current.x, current.y).equals(thresholdColor)) {
+				currentImage.setPixel(current.x, current.y, borderColor);
+				
+				// Next points to fill.
+				Point nextLeft = new Point(current.x-1, current.y);
+				Point nextRight = new Point(current.x+1, current.y);
+				Point nextUp = new Point(current.x, current.y+1);
+				Point nextDown = new Point(current.x, current.y-1);
+				stack.push(nextLeft);
+				stack.push(nextRight);
+				stack.push(nextUp);
+				stack.push(nextDown);
+			}
+		}
 	}
 	
 	/**
