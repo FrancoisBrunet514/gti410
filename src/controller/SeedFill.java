@@ -1,7 +1,13 @@
 package controller;
 
+import java.awt.Point;
+import java.awt.event.*;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.List;
+
 import model.ImageX;
 import model.Pixel;
+import model.Shape;
 
 public class SeedFill extends AbstractTransformer {
 	private ImageX currentImage;
@@ -23,6 +29,51 @@ public class SeedFill extends AbstractTransformer {
 	 * @see controller.AbstractTransformer#getID()
 	 */
 	public int getID() { return ID_FLOODER; } 
+	
+	protected boolean mouseClicked(MouseEvent e) {
+		List intersectedObjects = Selector.getDocumentObjectsAtLocation(e.getPoint());
+		if (!intersectedObjects.isEmpty()) {
+			Shape shape = (Shape)intersectedObjects.get(0);
+			if (shape instanceof ImageX) {
+				currentImage = (ImageX)shape;
+
+				Point pt = e.getPoint();
+				Point ptTransformed = new Point();
+				try {
+					shape.inverseTransformPoint(pt, ptTransformed);
+				} catch (NoninvertibleTransformException e1) {
+					e1.printStackTrace();
+					return false;
+				}
+				ptTransformed.translate(-currentImage.getPosition().x, -currentImage.getPosition().y);
+				if (0 <= ptTransformed.x && ptTransformed.x < currentImage.getImageWidth() &&
+				    0 <= ptTransformed.y && ptTransformed.y < currentImage.getImageHeight()) {
+					currentImage.beginPixelUpdate();
+				
+					if(isFloodFill()) {
+						floodFill(ptTransformed);
+					} else {
+						boundaryFill(ptTransformed);
+					}
+					
+					currentImage.endPixelUpdate();											 	
+					return true;
+				}
+			}
+			
+			
+		}
+		
+		return false;
+	}
+	
+	private void floodFill(Point ptClicked) {
+		
+	}
+	
+	private void boundaryFill(Point ptClicked) {
+		
+	}
 	
 	/**
 	 * @return
