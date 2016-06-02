@@ -24,13 +24,13 @@ public class SeedFill extends AbstractTransformer {
 	private int red;
 	private int green;
 	private int blue;
+	private HSVConverter hsvConverter;
 	
 	/**
 	 * Creates an ImageLineFiller with default parameters.
 	 * Default pixel change color is black.
 	 */
-	public SeedFill() {
-	}
+	public SeedFill() {}
 
 	/* (non-Javadoc)
 	 * @see controller.AbstractTransformer#getID()
@@ -77,25 +77,34 @@ public class SeedFill extends AbstractTransformer {
 	private void floodFill(Point ptClicked) {
 		System.out.println("Flood fill started");
 		
-		HSVConverter converter = new HSVConverter((double)this.hueThreshold, (double)this.saturationThreshold, (double)this.valueThreshold );
-		Pixel pxClicked = new Pixel();
-		pxClicked.setRed(converter.r);
-		pxClicked.setGreen(converter.g);
-		pxClicked.setBlue(converter.b);
-		
-		floodFill4(ptClicked.x, ptClicked.y, pxClicked, fillColor);
+		Pixel ptColor = currentImage.getPixel(ptClicked.x, ptClicked.y);
+
+        Stack<Point> stack = new Stack<Point>();
+        stack.push(ptClicked);
+        while (!stack.empty()) {
+            Point current = (Point)stack.pop();
+            if (0 <= current.x && current.x < currentImage.getImageWidth()
+                    && 0 <= current.y && current.y < currentImage.getImageHeight()
+                    && !currentImage.getPixel(current.x, current.y).equals(fillColor)
+                    && currentPointNeedsNewColor(current)) {
+
+                currentImage.setPixel(current.x, current.y, fillColor);
+
+                // Next points to fill.
+                Point west = new Point(current.x-1, current.y);
+                Point east = new Point(current.x+1, current.y);
+                Point north = new Point(current.x, current.y - 1);
+                Point south = new Point(current.x, current.y + 1);
+
+                // Add the points to the stack
+                stack.push(west);
+                stack.push(east);
+                stack.push(north);
+                stack.push(south);
+            }
+        }
 		
 		System.out.println("Flood fill finished");
-	}
-	
-	private void floodFill4(int x, int y, Pixel targetColor, Pixel replacementColor) {
-		if (targetColor.equals(replacementColor)) return;
-		if (!targetColor.equals(currentImage.getPixel(x, y))) return;
-		currentImage.setPixel(x, y, replacementColor);
-		floodFill4(x-1,y,targetColor,replacementColor);
-		floodFill4(x+1,y,targetColor,replacementColor);
-		floodFill4(x,y-1,targetColor,replacementColor);
-		floodFill4(x,y+1,targetColor,replacementColor);
 	}
 	
 	private void boundaryFill(Point ptClicked) {
@@ -123,7 +132,30 @@ public class SeedFill extends AbstractTransformer {
 			}
 		}
 	}
-	
+
+    private boolean currentPointNeedsNewColor(Point currentPt){
+        Pixel currentPx = this.currentImage.getPixel(currentPt.x, currentPt.y);
+
+        hsvConverter = new HSVConverter(currentPx.getRed(), currentPx.getGreen(), currentPx.getBlue());
+
+        double hueATester = hsvConverter.h*255;
+        double saturationATester = hsvConverter.s*255;
+        double valueATester = hsvConverter.v*255;
+
+        hsvConverter = new HSVConverter(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue());
+
+        double hueBoundary = hsvConverter.h*255;
+        double saturationBoundary = hsvConverter.s*255;
+        double valueBoundary = hsvConverter.v*255;
+
+        if((hueBoundary - hueThreshold) <= hueATester && hueATester <= (hueBoundary + hueThreshold)&&
+                (saturationBoundary - saturationThreshold) <= saturationATester && saturationATester <= (saturationBoundary + saturationThreshold)&&
+                (valueBoundary - valueThreshold) <= valueATester && valueATester <= (valueBoundary + valueThreshold)){
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * @return
 	 */
