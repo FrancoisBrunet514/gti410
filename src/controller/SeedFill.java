@@ -77,7 +77,7 @@ public class SeedFill extends AbstractTransformer {
 	private void floodFill(Point ptClicked) {
 		System.out.println("Flood fill started");
 		
-		Pixel ptColor = currentImage.getPixel(ptClicked.x, ptClicked.y);
+		Pixel initialPtColor = currentImage.getPixel(ptClicked.x, ptClicked.y);
 
         Stack<Point> stack = new Stack<Point>();
         stack.push(ptClicked);
@@ -86,7 +86,7 @@ public class SeedFill extends AbstractTransformer {
             if (0 <= current.x && current.x < currentImage.getImageWidth()
                     && 0 <= current.y && current.y < currentImage.getImageHeight()
                     && !currentImage.getPixel(current.x, current.y).equals(fillColor)
-                    && currentPointNeedsNewColor(current)) {
+                    && currentPointNeedsNewColor(current, initialPtColor)) {
 
                 currentImage.setPixel(current.x, current.y, fillColor);
 
@@ -110,15 +110,13 @@ public class SeedFill extends AbstractTransformer {
 	private void boundaryFill(Point ptClicked) {
 		Stack<Point> stack = new Stack<Point>();
 		stack.push(ptClicked);
-		hsvConverter = new HSVConverter(this.getHueThreshold(), this.getSaturationThreshold(), this.getValueThreshold());
-		Pixel thresholdColor = new Pixel(hsvConverter.r, hsvConverter.g, hsvConverter.b);
 		while (!stack.empty()) {
 			Point current = (Point)stack.pop();
 			if (0 <= current.x && current.x < currentImage.getImageWidth() &&
 				0 <= current.y && current.y < currentImage.getImageHeight() &&
-				!currentImage.getPixel(current.x, current.y).equals(borderColor) &&
-				!currentImage.getPixel(current.x, current.y).equals(thresholdColor)) {
-				currentImage.setPixel(current.x, current.y, borderColor);
+				!currentImage.getPixel(current.x, current.y).equals(fillColor) &&
+				currentPointNeedsNewColor(ptClicked, borderColor)) {
+				currentImage.setPixel(current.x, current.y, fillColor);
 				
 				// Next points to fill.
 				Point nextLeft = new Point(current.x-1, current.y);
@@ -133,28 +131,58 @@ public class SeedFill extends AbstractTransformer {
 		}
 	}
 
-    private boolean currentPointNeedsNewColor(Point currentPt){
+    private boolean currentPointNeedsNewColor(Point currentPt, Pixel regionColor){
         Pixel currentPx = this.currentImage.getPixel(currentPt.x, currentPt.y);
 
         hsvConverter = new HSVConverter(currentPx.getRed(), currentPx.getGreen(), currentPx.getBlue());
 
-        double hueATester = hsvConverter.h*255;
-        double saturationATester = hsvConverter.s*255;
-        double valueATester = hsvConverter.v*255;
+        double hueATester = hsvConverter.h;
+        double saturationATester = hsvConverter.s;
+        double valueATester = hsvConverter.v;
 
-        hsvConverter = new HSVConverter(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue());
+        hsvConverter = new HSVConverter(regionColor.getRed(), regionColor.getGreen(), regionColor.getBlue());
 
-        double hueBoundary = hsvConverter.h*255;
-        double saturationBoundary = hsvConverter.s*255;
-        double valueBoundary = hsvConverter.v*255;
+        double hueBoundary = hsvConverter.h;
+        double saturationBoundary = hsvConverter.s;
+        double valueBoundary = hsvConverter.v;
 
         if((hueBoundary - hueThreshold) <= hueATester && hueATester <= (hueBoundary + hueThreshold)&&
                 (saturationBoundary - saturationThreshold) <= saturationATester && saturationATester <= (saturationBoundary + saturationThreshold)&&
                 (valueBoundary - valueThreshold) <= valueATester && valueATester <= (valueBoundary + valueThreshold)){
-            return false;
+            return this.isFloodFill();
         }
-        return true;
+        return !this.isFloodFill();
     }
+    
+//    public boolean isPixelOfBorderColor(Point currentPt) {
+//    	Pixel px = currentImage.getPixel(currentPt.x, currentPt.y);
+//    	
+//    	hsvConverter = new HSVConverter(px.getRed(), px.getGreen(), px.getBlue());
+//
+//        double hueATester = hsvConverter.h;
+//        double saturationATester = hsvConverter.s;
+//        double valueATester = hsvConverter.v;
+//
+//        hsvConverter = new HSVConverter(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue());
+//    	
+//        double hueBoundary = hsvConverter.h;
+//        double saturationBoundary = hsvConverter.s;
+//        double valueBoundary = hsvConverter.v;
+//        
+//        double lowHueTresh = hueBoundary - hueThreshold;
+//        double highHueTresh = hueBoundary + hueThreshold;
+//        double lowSatTresh = saturationBoundary - saturationThreshold;
+//        double highSatTresh = saturationBoundary + saturationThreshold;
+//        double lowValTresh = valueBoundary - valueThreshold;
+//        double highValTresh = valueBoundary + valueThreshold;
+//        
+//        if(lowHueTresh <= hueATester && hueATester <= highHueTresh &&
+//                lowSatTresh <= saturationATester && saturationATester <= highSatTresh &&
+//                lowValTresh <= valueATester && valueATester <= highValTresh){
+//            return true;
+//        }
+//        return false;
+//    }
 
 	/**
 	 * @return
