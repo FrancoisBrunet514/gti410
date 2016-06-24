@@ -93,18 +93,18 @@ public class FilteringTransformer extends AbstractTransformer{
 	}
 
 	/**
-	 * Méthode pour sélectionner la stratégie de crampon (clamp) à utiliser
-	 * @param string Valeur choisir dans le menu déroulant des crampons (clamps)
+	 * Méthode pour sélectionner la stratégie de conversion d'image à utiliser
+	 * @param string Valeur choisir dans le menu déroulant des intervalles
 	 */
 	public void setClamp(String string) {
 		switch (string) {
 		case "Clamp 0...255":
 			filter.setImageConversionStrategy(new ImageClampStrategy());
-			System.out.println("Crampon 0 à 255");
+			System.out.println("Stratégie valeurs crampon 0 à 255");
 			break;
 		case "Abs and normalize to 255":
 			filter.setImageConversionStrategy(new ImageAbsNorm255Strategy());
-			System.out.println("Crampon abosolut normalisé à 255");
+			System.out.println("Stratégie valeurs absolues et normalisées à 255");
 			break;
 		}
 	}
