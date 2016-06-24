@@ -32,8 +32,8 @@ import controller.TransformersIndex;
 /**
  * <p>Title: FilterKernelPanel</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003 Sébastien Bois, Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2003 Sï¿½bastien Bois, Eric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * @author unascribed
  * @version $Revision: 1.8 $
  */
@@ -158,36 +158,40 @@ public class FilterKernelPanel extends JPanel implements ObserverIF {
 			}
 		}
 		switch (index) {
-			case 1: // Mean filter
+			case 1: // Mean filter, source: http://homepages.inf.ed.ac.uk/rbf/HIPR2/mean.htm
 			{
-				float meanKernel[][] = {{1, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
+				float meanKernel[][] = {{(float) 0.111111111, (float) 0.111111111, (float) 0.111111111},
+										{(float) 0.111111111, (float) 0.111111111, (float) 0.111111111},
+										{(float) 0.111111111, (float) 0.111111111, (float) 0.111111111}};
 				_kernelPanel.setKernelValues(meanKernel);
+				System.out.println("Filtre moyen");
 			} 
 			break;
-			case 2: // Gaussian filter
+			case 2: // Gaussian filter, source: http://stackoverflow.com/questions/20746172/blur-an-image-using-3x3-gaussian-kernel
 			{
-				float meanKernel[][] = {{2, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
-				_kernelPanel.setKernelValues(meanKernel);
+				float gaussianKernel[][] = {{(float) 0.0625, (float) 0.125, (float) 0.0625},
+										{(float) 0.125, (float) 0.25, (float) 0.125},
+										{(float) 0.0625, (float) 0.125, (float) 0.0625}};
+				_kernelPanel.setKernelValues(gaussianKernel);
+				System.out.println("Filtre Gaussian");
 			} 
 			break;
-			case 3: // 4-Neighbour Laplacian
+			case 3: // 4-Neighbour Laplacian, source: http://www.imagemagick.org/Usage/convolve/#laplacian
 			{
-				float meanKernel[][] = {{3, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
-				_kernelPanel.setKernelValues(meanKernel);
+				float fourLaplacianKernel[][] = {{0, -1, 0},
+										{-1, 4, -1},
+										{0, -1, 0}};
+				_kernelPanel.setKernelValues(fourLaplacianKernel);
+				System.out.println("Filtre Laplacian 4 voisins");
 			} 
 			break;
-			case 4: // 8-Neighbour Laplacian
+			case 4: // 8-Neighbour Laplacian, source http://www.imagemagick.org/Usage/convolve/#laplacian
 			{
-				float meanKernel[][] = {{4, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
-				_kernelPanel.setKernelValues(meanKernel);
+				float eightLaplacianKernel[][] = {{-1, -1, -1},
+										{-1, 8, -1},
+										{-1, -1, -1}};
+				_kernelPanel.setKernelValues(eightLaplacianKernel);
+				System.out.println("Filtre Laplacian 8 voisins");
 			} 
 			break;
 			case 5: // Prewitt Horiz
@@ -206,20 +210,22 @@ public class FilterKernelPanel extends JPanel implements ObserverIF {
 				_kernelPanel.setKernelValues(meanKernel);
 			} 
 			break;
-			case 7: // Sobel Horiz 
+			case 7: // Sobel Horiz, source: https://en.wikipedia.org/wiki/Sobel_operator
 			{
-				float meanKernel[][] = {{7, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
-				_kernelPanel.setKernelValues(meanKernel);
+				float sobelHorizKernel[][] = {{-1, 0, 1},
+										{-2, 0, 2},
+										{-1, 0, 1}};
+				_kernelPanel.setKernelValues(sobelHorizKernel);
+				System.out.println("Filtre Sobel Horizontal");
 			} 
 			break;
-			case 8: // Sobel Vert
+			case 8: // Sobel Vert, source: https://en.wikipedia.org/wiki/Sobel_operator
 			{
-				float meanKernel[][] = {{8, 2, 3},
-										{4, 5, 6},
-										{7, 8, 9}};
-				_kernelPanel.setKernelValues(meanKernel);
+				float sobelVertKernel[][] = {{-1, -2, -1},
+										{0, 0, 0},
+										{1, 2, 1}};
+				_kernelPanel.setKernelValues(sobelVertKernel);
+				System.out.println("Filtre Sobel Vertical");
 			} 
 			break;
 			case 9: // Roberts 45 degrees
