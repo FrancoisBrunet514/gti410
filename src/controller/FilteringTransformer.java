@@ -25,13 +25,13 @@ import model.Shape;
  * 
  * <p>Title: FilteringTransformer</p>
  * <p>Description: ... (AbstractTransformer)</p>
- * <p>Copyright: Copyright (c) 2004 S�bastien Bois, Eric Paquette</p>
- * <p>Company: (�TS) - �cole de Technologie Sup�rieure</p>
+ * <p>Copyright: Copyright (c) 2004 S�bastien Bois, Eric Paquette</p>
+ * <p>Company: (�TS) - �cole de Technologie Sup�rieure</p>
  * @author unascribed
  * @version $Revision: 1.6 $
  */
 public class FilteringTransformer extends AbstractTransformer{
-	Filter filter = new MeanFilter3x3(new PaddingZeroStrategy(), new ImageClampStrategy());
+	FilterCustom filter = new FilterCustom(new PaddingZeroStrategy(), new ImageClampStrategy());
 	
 	/**
 	 * @param _coordinates
@@ -41,6 +41,7 @@ public class FilteringTransformer extends AbstractTransformer{
 		System.out.println("[" + (_coordinates.getColumn() - 1) + "]["
                                    + (_coordinates.getRow() - 1) + "] = " 
                                    + _value);
+		filter.updateKernel(_coordinates, _value);
 	}
 		
 	/**
@@ -75,16 +76,36 @@ public class FilteringTransformer extends AbstractTransformer{
 	public int getID() { return ID_FILTER; }
 
 	/**
-	 * @param string
+	 * Méthode pour sélectionner la stratégie de traitement des bordures à utiliser
+	 * @param string Valeur choisie dans le menu déroulant des bordures
 	 */
 	public void setBorder(String string) {
-		System.out.println(string);
+		switch (string) {
+		case "0":
+			filter.setPaddingStrategy(new PaddingZeroStrategy());
+			System.out.println("Bordures en contour de zéro");
+			break;
+		case "Circular":
+			filter.setPaddingStrategy(new PaddingCircularStrategy());
+			System.out.println("Bordures en contour circulaire");
+			break;
+		}
 	}
 
 	/**
-	 * @param string
+	 * Méthode pour sélectionner la stratégie de conversion d'image à utiliser
+	 * @param string Valeur choisir dans le menu déroulant des intervalles
 	 */
 	public void setClamp(String string) {
-		System.out.println(string);
+		switch (string) {
+		case "Clamp 0...255":
+			filter.setImageConversionStrategy(new ImageClampStrategy());
+			System.out.println("Stratégie valeurs crampon 0 à 255");
+			break;
+		case "Abs and normalize to 255":
+			filter.setImageConversionStrategy(new ImageAbsNorm255Strategy());
+			System.out.println("Stratégie valeurs absolues et normalisées à 255");
+			break;
+		}
 	}
 }
