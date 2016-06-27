@@ -3,7 +3,7 @@ package controller;
 import model.*;
 
 /**
- * <p>Title: ImageAbsolute255Strategy</p>
+ * <p>Title: ImageAbsNorm255Strategy</p>
  * <p>Description: Image-related strategy using absolute and normalized values to 255</p>
  * <p>Copyright: Copyright (c) 2016 Day, Pierre-Alexandre</p>
  * <p>Company: ETS - École de Technologie Supérieure</p>
