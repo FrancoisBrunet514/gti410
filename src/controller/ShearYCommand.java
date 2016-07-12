@@ -14,13 +14,18 @@
 */
 package controller;
 
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.List;
+
+import model.Shape;
 
 /**
  * <p>Title: ShearYCommand</p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004 Jean-François Barras, Éric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2004 Jean-Franï¿½ois Barras, ï¿½ric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * <p>Created on: 2004-03-19</p>
  * @version $Revision: 1.4 $
  */
@@ -43,7 +48,20 @@ public class ShearYCommand extends AnchoredTransformationCommand {
 		System.out.println("command: shearing on y-axis to " + angleDegrees +
 				           " degrees anchored on " + getAnchor());
 				           		
-		// voluntarily undefined
+		Iterator i = objects.iterator();
+		Shape s;
+		Point anchor;
+		while(i.hasNext()) {
+			s = (Shape)i.next();
+			anchor = this.getAnchorPoint(s);
+			mt.addMememto(s);
+			
+			AffineTransform t = s.getAffineTransform();
+			t.translate(anchor.getX(), anchor.getY());
+			t.shear(0, -Math.tan(Math.toRadians(angleDegrees)));
+			t.translate(-anchor.getX(), -anchor.getY());
+			s.setAffineTransform(t);
+		}
 	}
 
 	/* (non-Javadoc)
