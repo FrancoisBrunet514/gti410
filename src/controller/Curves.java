@@ -14,6 +14,7 @@
 */
 package controller;
 
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -122,7 +123,35 @@ public class Curves extends AbstractTransformer implements DocObserver {
 				Shape s = (Shape)selectedObjects.get(0);
 				if (curve.getShapes().contains(s)){
 					int controlPointIndex = curve.getShapes().indexOf(s);
-					System.out.println("Try to apply G1 continuity on control point [" + controlPointIndex + "]");
+					
+					if (controlPointIndex >= 3 && curve.getShapes().size() >= 7) {
+						
+						Point p3 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex + 1)).getCenter();
+						Point p2 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex)).getCenter();
+						Point p1 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex - 1)).getCenter();
+						
+						int distance1X = p2.x - p1.x;
+						int distance1Y = p2.y - p1.y;
+						int distance2X = p3.x - p2.x;
+						int distance2Y = p3.y - p2.y;
+						
+						double normal1 = Math.sqrt((distance1X*distance1X) + (distance1Y*distance1Y));
+						double normal2 = Math.sqrt((distance2X*distance2X) + (distance2Y*distance2Y));
+						
+						double coefficiant1X = distance1X / normal1;
+						double coefficiant1Y = distance1Y / normal1;
+						
+						int x = (int) (p2.x + Math.round(normal2*coefficiant1X));
+						int y = (int) (p2.y + Math.round(normal2*coefficiant1Y));
+						
+						Point newPoint = new Point(x,y);
+						
+						((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex + 1)).setCenter(newPoint);;
+						
+						curve.update();
+					} else {
+						System.out.println("Point invalid");
+					}
 				}
 			}
 			
@@ -137,7 +166,30 @@ public class Curves extends AbstractTransformer implements DocObserver {
 				Shape s = (Shape)selectedObjects.get(0);
 				if (curve.getShapes().contains(s)){
 					int controlPointIndex = curve.getShapes().indexOf(s);
-					System.out.println("Try to apply C1 continuity on control point [" + controlPointIndex + "]");
+					
+					if(controlPointIndex != 0 || controlPointIndex != curve.getShapes().size() - 1) {
+						Point pCenter = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex)).getCenter();
+						Point pBefore = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex - 1)).getCenter();
+						
+						int distance1X = pCenter.x - pBefore.x;
+						int distance1Y = pCenter.y - pBefore.y;
+						
+						double normal1 = Math.sqrt((distance1X*distance1X) + (distance1Y*distance1Y));
+						
+						double coefficiant1X = distance1X / normal1;
+						double coefficiant1Y = distance1Y / normal1;
+						
+						int x = (int) (pCenter.x + Math.round(coefficiant1X*normal1));
+						int y = (int) (pCenter.y + Math.round(coefficiant1Y*normal1));
+						
+						Point newPoint = new Point(x,y);
+						
+						((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex + 1)).setCenter(newPoint);;
+						
+						curve.update();
+					} else {
+						System.out.println("YOU SHALL NOT SYMETRIZE");
+					}
 				}
 			}
 			
