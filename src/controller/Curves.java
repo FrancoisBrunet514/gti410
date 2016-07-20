@@ -26,14 +26,15 @@ import model.Curve;
 import model.CurvesModel;
 import model.DocObserver;
 import model.Document;
+import model.HermiteCurveType;
 import model.PolylineCurveType;
 import model.Shape;
 
 /**
  * <p>Title: Curves</p>
  * <p>Description: (AbstractTransformer)</p>
- * <p>Copyright: Copyright (c) 2004 Sébastien Bois, Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Copyright: Copyright (c) 2004 Sï¿½bastien Bois, Eric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * @author unascribed
  * @version $Revision: 1.10 $
  */
@@ -104,6 +105,10 @@ public class Curves extends AbstractTransformer implements DocObserver {
 			curve.setCurveType(new BezierCurveType(CurvesModel.BEZIER));
 		} else if (string == CurvesModel.LINEAR) {
 			curve.setCurveType(new PolylineCurveType(CurvesModel.LINEAR));
+		} else if (string == CurvesModel.HERMITE) {
+			curve.setCurveType(new HermiteCurveType(CurvesModel.HERMITE));
+		} else if (string == CurvesModel.BSPLINE) {
+			curve.setCurveType(new BSPlineCurveType(CurvesModel.BSPLINE));
 		} else {
 			System.out.println("Curve type [" + string + "] is unknown.");
 		}
