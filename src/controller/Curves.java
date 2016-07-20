@@ -19,7 +19,7 @@ import java.util.List;
 
 import view.Application;
 import view.CurvesPanel;
-
+import model.BSPlineCurveType;
 import model.BezierCurveType;
 import model.ControlPoint;
 import model.Curve;

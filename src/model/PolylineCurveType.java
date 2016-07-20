@@ -21,7 +21,7 @@ import java.util.List;
  * <p>Title: PolylineCurveType</p>
  * <p>Description: ... (CurveType)</p>
  * <p>Copyright: Copyright (c) 2004 Eric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * @author Eric Paquette
  * @version $Revision: 1.4 $
  */
