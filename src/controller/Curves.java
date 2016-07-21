@@ -124,25 +124,25 @@ public class Curves extends AbstractTransformer implements DocObserver {
 				if (curve.getShapes().contains(s)){
 					int controlPointIndex = curve.getShapes().indexOf(s);
 					
-					if (controlPointIndex >= 3 && curve.getShapes().size() >= 7) {
+					if (controlPointIndex > 0 && controlPointIndex < curve.getShapes().size() - 1) {
 						
-						Point p3 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex + 1)).getCenter();
-						Point p2 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex)).getCenter();
-						Point p1 = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex - 1)).getCenter();
+						Point pAfter = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex + 1)).getCenter();
+						Point pCenter = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex)).getCenter();
+						Point pBefore = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex - 1)).getCenter();
 						
-						int distance1X = p2.x - p1.x;
-						int distance1Y = p2.y - p1.y;
-						int distance2X = p3.x - p2.x;
-						int distance2Y = p3.y - p2.y;
+						int distance1X = pCenter.x - pBefore.x;
+						int distance1Y = pCenter.y - pBefore.y;
+						int distance2X = pAfter.x - pCenter.x;
+						int distance2Y = pAfter.y - pCenter.y;
 						
 						double normal1 = Math.sqrt((distance1X*distance1X) + (distance1Y*distance1Y));
 						double normal2 = Math.sqrt((distance2X*distance2X) + (distance2Y*distance2Y));
 						
-						double coefficiant1X = distance1X / normal1;
-						double coefficiant1Y = distance1Y / normal1;
+						double coefficient1X = distance1X / normal1;
+						double coefficient1Y = distance1Y / normal1;
 						
-						int x = (int) (p2.x + Math.round(normal2*coefficiant1X));
-						int y = (int) (p2.y + Math.round(normal2*coefficiant1Y));
+						int x = (int) (pCenter.x + Math.round(normal2*coefficient1X));
+						int y = (int) (pCenter.y + Math.round(normal2*coefficient1Y));
 						
 						Point newPoint = new Point(x,y);
 						
@@ -150,7 +150,7 @@ public class Curves extends AbstractTransformer implements DocObserver {
 						
 						curve.update();
 					} else {
-						System.out.println("Point invalid");
+						System.out.println("YOU SHALL NOT ALIGN");
 					}
 				}
 			}
@@ -167,20 +167,20 @@ public class Curves extends AbstractTransformer implements DocObserver {
 				if (curve.getShapes().contains(s)){
 					int controlPointIndex = curve.getShapes().indexOf(s);
 					
-					if(controlPointIndex != 0 || controlPointIndex != curve.getShapes().size() - 1) {
+					if(controlPointIndex > 0 && controlPointIndex < curve.getShapes().size() - 1) {
 						Point pCenter = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex)).getCenter();
 						Point pBefore = ((ControlPoint)(Shape)curve.getShapes().get(controlPointIndex - 1)).getCenter();
 						
 						int distance1X = pCenter.x - pBefore.x;
 						int distance1Y = pCenter.y - pBefore.y;
 						
-						double normal1 = Math.sqrt((distance1X*distance1X) + (distance1Y*distance1Y));
+						double normal = Math.sqrt((distance1X*distance1X) + (distance1Y*distance1Y));
 						
-						double coefficiant1X = distance1X / normal1;
-						double coefficiant1Y = distance1Y / normal1;
+						double coefficient1X = distance1X / normal;
+						double coefficient1Y = distance1Y / normal;
 						
-						int x = (int) (pCenter.x + Math.round(coefficiant1X*normal1));
-						int y = (int) (pCenter.y + Math.round(coefficiant1Y*normal1));
+						int x = (int) (pCenter.x + Math.round(coefficient1X*normal));
+						int y = (int) (pCenter.y + Math.round(coefficient1Y*normal));
 						
 						Point newPoint = new Point(x,y);
 						
