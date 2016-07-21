@@ -14,13 +14,18 @@
 */
 package controller;
 
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.List;
+
+import model.Shape;
 
 /**
  * <p>Title: RotateCommand</p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004 Jean-François Barras, Éric Paquette</p>
- * <p>Company: (ÉTS) - École de Technologie Supérieure</p>
+ * <p>Description: This is the class to execute de rotate command.</p>
+ * <p>Copyright: Copyright (c) 2004 Jean-Franï¿½ois Barras, ï¿½ric Paquette</p>
+ * <p>Company: (ï¿½TS) - ï¿½cole de Technologie Supï¿½rieure</p>
  * <p>Created on: 2004-03-19</p>
  * @version $Revision: 1.2 $
  */
@@ -32,7 +37,7 @@ public class RotateCommand extends AnchoredTransformationCommand {
 	 */
 	public RotateCommand(double thetaDegrees,
 						 int anchor,
-						 List aObjects) {
+						 List<?> aObjects) {
 		super(anchor);
 		this.thetaDegrees = thetaDegrees;
 		objects = aObjects;
@@ -45,7 +50,19 @@ public class RotateCommand extends AnchoredTransformationCommand {
 		System.out.println("command: rotate " + thetaDegrees +
                            " degrees around " + getAnchor() + ".");
 
-		// voluntarily undefined
+		Iterator<?> i = objects.iterator();
+		Shape shape;
+		Point anchor;
+		while(i.hasNext()) {
+			shape = (Shape)i.next();
+			anchor = this.getAnchorPoint(shape);
+			
+			mt.addMememto(shape);
+			
+			AffineTransform transform = shape.getAffineTransform();
+			transform.rotate(Math.toRadians(thetaDegrees), anchor.getX(), anchor.getY());
+			shape.setAffineTransform(transform);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -56,7 +73,7 @@ public class RotateCommand extends AnchoredTransformationCommand {
 	}
 
 	private MementoTracker mt = new MementoTracker();
-	private List objects;
+	private List<?> objects;
 	private double thetaDegrees;
 	
 }
